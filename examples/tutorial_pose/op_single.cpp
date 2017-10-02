@@ -108,6 +108,13 @@ int openPoseTutorialPose1()
     processImage(cvMatToOpInput, cvMatToOpOutput, poseExtractorCaffe, poseRenderer, opOutputToCvMat,
                  imagePath, outputJsonPath, outputImagePath);
 
+    std::string in2 = "/home/ubuntu/ddr/images/img_t1.png";
+    std::string out2j = "/efs/test2.json";
+    std::string out2p = "/efs/test2.png";
+
+    processImage(cvMatToOpInput, cvMatToOpOutput, poseExtractorCaffe, poseRenderer, opOutputToCvMat,
+                 in2, out2j, out2p);
+
     // ------------------------- SHOWING RESULT AND CLOSING -------------------------
     // Step 1 - Show results
     //frameDisplayer.displayFrame(outputImage, 0); // Alternative: cv::imshow(outputImage) + cv::waitKey(0)
@@ -157,10 +164,6 @@ void processImage(const op::CvMatToOpInput &cvMatToOpInput, const op::CvMatToOpO
 //    }
 //    op::log(" ");
 
-    const std::string outImageStr ("/efs/test1.png");
-    const std::string outJsonStr ("/efs/test1.json");
-
-    const std::string jsonKey ("json");
     const std::string poseKPStr ("pose_keypoints");
 
     saveKeypointsJson(poseKeypoints, poseKPStr, outputJsonPath, true);
