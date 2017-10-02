@@ -27,6 +27,8 @@ DEFINE_int32(logging_level,             3,              "The logging level. Inte
                                                         " low priority messages and 4 for important ones.");
 // Producer
 DEFINE_string(image_path,               "examples/media/COCO_val2014_000000000192.jpg",     "Process the desired image.");
+DEFINE_string(output_path_json,         "examples/media/COCO_val2014_000000000192.json",    "Store json output at this path.");
+DEFINE_string(output_path_png,          "examples/media/COCO_val2014_000000000192.png",     "Store rendered image at this path.");
 // OpenPose
 DEFINE_string(model_pose,               "COCO",         "Model to be used. E.g. `COCO` (18 keypoints), `MPI` (15 keypoints, ~10% faster), "
                                                         "`MPI_4_layers` (15 keypoints, even faster but less accurate).");
@@ -142,13 +144,15 @@ int openPoseTutorialPose1()
 
 //    op::saveKeypointsJson(outputArray, jsonKey, outJsonStr, true);
 //    op::saveKeypointsJson(outputArray, outJsonStr, true);
-    op::saveKeypointsJson(poseKeypoints, poseKPStr, outJsonStr, true);
+//    op::saveKeypointsJson(poseKeypoints, poseKPStr, outJsonStr, true);
+    op::saveKeypointsJson(poseKeypoints, poseKPStr, FLAGS_output_path_json, true);
 
     std::vector<int> compressionParams;
     compressionParams.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compressionParams.push_back(9);
-    op::saveImage(outputImage, outImageStr, compressionParams);
-    
+//    op::saveImage(outputImage, outImageStr, compressionParams);
+    op::saveImage(outputImage, FLAGS_output_path_png, compressionParams);
+
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
