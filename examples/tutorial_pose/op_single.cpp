@@ -110,7 +110,7 @@ int openPoseTutorialPose1()
     poseExtractorCaffe.forwardPass(netInputArray, {inputImage.cols, inputImage.rows}, scaleRatios);
     const auto poseKeypoints = poseExtractorCaffe.getPoseKeypoints();
     // Step 4 - Render poseKeypoints
-    poseRenderer.renderPose(outputArray, poseKeypoints);
+    auto posePairs = poseRenderer.renderPose(outputArray, poseKeypoints);
     // Step 5 - OpenPose output format to cv::Mat
     auto outputImage = opOutputToCvMat.formatToCvMat(outputArray);
     
@@ -120,7 +120,9 @@ int openPoseTutorialPose1()
     const std::string jsonKey ("json");
     auto jsonDF = op::stringToDataFormat(jsonKey);
  //   op::saveData(outputImage, outJsonStr, outJsonStr, jsonDF);
- 
+
+    op::saveKeypointsJson(posePairs, outJsonStr, true);
+
 //    op::saveKeypointsJson(outputArray, jsonKey, outJsonStr, true);
 //    op::saveKeypointsJson(outputArray, outJsonStr, true);    
     std::vector<int> compressionParams;
