@@ -22,7 +22,12 @@
 // Note: This command will show you flags for other unnecessary 3rdparty files. Check only the flags for the OpenPose
 // executable. E.g. for `openpose.bin`, look for `Flags from examples/openpose/openpose.cpp:`.
 // Debugging
-DEFINE_int32(logging_level,             3,              "The logging level. Integer in the range [0, 255]. 0 will output any log() message, while"
+void processImage(const op::CvMatToOpInput &cvMatToOpInput, const op::CvMatToOpOutput &cvMatToOpOutput,
+                  op::PoseExtractorCaffe &poseExtractorCaffe, op::PoseRenderer &poseRenderer,
+                  const op::OpOutputToCvMat &opOutputToCvMat, const std::string &imagePath,
+                  const std::string &outputJsonPath, const std::string &outputImagePath);
+
+DEFINE_int32(logging_level, 3, "The logging level. Integer in the range [0, 255]. 0 will output any log() message, while"
                                                         " 255 will not output any. Current OpenPose library messages are in the range 0-4: 1 for"
                                                         " low priority messages and 4 for important ones.");
 // Producer
@@ -96,15 +101,35 @@ int openPoseTutorialPose1()
 
     // ------------------------- POSE ESTIMATION AND RENDERING -------------------------
     // Step 1 - Read and load image, error if empty (possibly wrong path)
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
-    cv::Mat inputImage = op::loadImage(FLAGS_image_path, CV_LOAD_IMAGE_COLOR); // Alternative: cv::imread(FLAGS_image_path, CV_LOAD_IMAGE_COLOR);
+    std::string imagePath = FLAGS_image_path;
+    std::string outputJsonPath = FLAGS_output_path_json;
+    std::string outputImagePath = FLAGS_output_path_png;
+
+    processImage(cvMatToOpInput, cvMatToOpOutput, poseExtractorCaffe, poseRenderer, opOutputToCvMat,
+                 imagePath, outputJsonPath, outputImagePath);
+
+    // ------------------------- SHOWING RESULT AND CLOSING -------------------------
+    // Step 1 - Show results
+    //frameDisplayer.displayFrame(outputImage, 0); // Alternative: cv::imshow(outputImage) + cv::waitKey(0)
+    // Step 2 - Logging information message
+    op::log("Example 1 successfully finished.", op::Priority::High);
+    // Return successful message
+    return 0;
+}
+
+void processImage(const op::CvMatToOpInput &cvMatToOpInput, const op::CvMatToOpOutput &cvMatToOpOutput,
+                  op::PoseExtractorCaffe &poseExtractorCaffe, op::PoseRenderer &poseRenderer,
+                  const op::OpOutputToCvMat &opOutputToCvMat, const std::string &imagePath,
+                  const std::string &outputJsonPath, const std::string &outputImagePath) {
+    std::chrono::time_point<std::chrono::_V2::system_clock> start, end;
+    start = std::chrono::_V2::system_clock::now();
+    cv::Mat inputImage = op::loadImage(imagePath, CV_LOAD_IMAGE_COLOR); // Alternative: cv::imread(FLAGS_image_path, CV_LOAD_IMAGE_COLOR);
     if(inputImage.empty())
-        op::error("Could not open or find the image: " + FLAGS_image_path, __LINE__, __FUNCTION__, __FILE__);
+        op::error("Could not open or find the image: " + imagePath, __LINE__, __FUNCTION__, __FILE__);
     // Step 2 - Format input image to OpenPose input and output formats
     op::Array<float> netInputArray;
     std::vector<float> scaleRatios;
-    std::tie(netInputArray, scaleRatios) = cvMatToOpInput.format(inputImage);
+    tie(netInputArray, scaleRatios) = cvMatToOpInput.format(inputImage);
     double scaleInputToOutput;
     op::Array<float> outputArray;
     std::tie(scaleInputToOutput, outputArray) = cvMatToOpOutput.format(inputImage);
@@ -131,32 +156,24 @@ int openPoseTutorialPose1()
 //        }
 //    }
 //    op::log(" ");
-    
+
     const std::string outImageStr ("/efs/test1.png");
     const std::string outJsonStr ("/efs/test1.json");
 
     const std::string jsonKey ("json");
     const std::string poseKPStr ("pose_keypoints");
 
-    op::saveKeypointsJson(poseKeypoints, poseKPStr, FLAGS_output_path_json, true);
+    saveKeypointsJson(poseKeypoints, poseKPStr, outputJsonPath, true);
 
     std::vector<int> compressionParams;
     compressionParams.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compressionParams.push_back(9);
 //    op::saveImage(outputImage, outImageStr, compressionParams);
-    op::saveImage(outputImage, FLAGS_output_path_png, compressionParams);
+    op::saveImage(outputImage, outputImagePath, compressionParams);
 
-    end = std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed_seconds = end-start;
+    end = std::chrono::_V2::system_clock::now();
+    std::chrono::duration<double> elapsed_seconds = end - start;
     std::cout << "elapsed time: " << elapsed_seconds.count() << "s\n";
-    
-    // ------------------------- SHOWING RESULT AND CLOSING -------------------------
-    // Step 1 - Show results
-    //frameDisplayer.displayFrame(outputImage, 0); // Alternative: cv::imshow(outputImage) + cv::waitKey(0)
-    // Step 2 - Logging information message
-    op::log("Example 1 successfully finished.", op::Priority::High);
-    // Return successful message
-    return 0;
 }
 
 int main(int argc, char *argv[])
