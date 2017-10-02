@@ -137,14 +137,7 @@ int openPoseTutorialPose1()
 
     const std::string jsonKey ("json");
     const std::string poseKPStr ("pose_keypoints");
-    auto jsonDF = op::stringToDataFormat(jsonKey);
- //   op::saveData(outputImage, outJsonStr, outJsonStr, jsonDF);
 
-    //op::saveKeypointsJson(posePairs, outJsonStr, true);
-
-//    op::saveKeypointsJson(outputArray, jsonKey, outJsonStr, true);
-//    op::saveKeypointsJson(outputArray, outJsonStr, true);
-//    op::saveKeypointsJson(poseKeypoints, poseKPStr, outJsonStr, true);
     op::saveKeypointsJson(poseKeypoints, poseKPStr, FLAGS_output_path_json, true);
 
     std::vector<int> compressionParams;
