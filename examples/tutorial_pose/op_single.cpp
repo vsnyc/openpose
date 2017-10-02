@@ -121,7 +121,7 @@ int openPoseTutorialPose1()
     auto jsonDF = op::stringToDataFormat(jsonKey);
  //   op::saveData(outputImage, outJsonStr, outJsonStr, jsonDF);
 
-    op::saveKeypointsJson(posePairs, outJsonStr, true);
+    //op::saveKeypointsJson(posePairs, outJsonStr, true);
 
 //    op::saveKeypointsJson(outputArray, jsonKey, outJsonStr, true);
 //    op::saveKeypointsJson(outputArray, outJsonStr, true);    
