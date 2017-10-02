@@ -113,18 +113,37 @@ int openPoseTutorialPose1()
     auto posePairs = poseRenderer.renderPose(outputArray, poseKeypoints);
     // Step 5 - OpenPose output format to cv::Mat
     auto outputImage = opOutputToCvMat.formatToCvMat(outputArray);
+
+    //Points Debug
+//    for (auto person = 0 ; person < poseKeypoints.getSize(0) ; person++)
+//    {
+//        op::log("Person " + std::to_string(person) + " (x, y, score):");
+//        for (auto bodyPart = 0 ; bodyPart < poseKeypoints.getSize(1) ; bodyPart++)
+//        {
+//            std::string valueToPrint;
+//            for (auto xyscore = 0 ; xyscore < poseKeypoints.getSize(2) ; xyscore++)
+//            {
+//                valueToPrint += std::to_string(   poseKeypoints[{person, bodyPart, xyscore}]   ) + " ";
+//            }
+//            op::log(valueToPrint);
+//        }
+//    }
+//    op::log(" ");
     
     const std::string outImageStr ("/efs/test1.png");
     const std::string outJsonStr ("/efs/test1.json");
 
     const std::string jsonKey ("json");
+    const std::string poseKPStr ("pose_keypoints");
     auto jsonDF = op::stringToDataFormat(jsonKey);
  //   op::saveData(outputImage, outJsonStr, outJsonStr, jsonDF);
 
     //op::saveKeypointsJson(posePairs, outJsonStr, true);
 
 //    op::saveKeypointsJson(outputArray, jsonKey, outJsonStr, true);
-//    op::saveKeypointsJson(outputArray, outJsonStr, true);    
+//    op::saveKeypointsJson(outputArray, outJsonStr, true);
+    op::saveKeypointsJson(poseKeypoints, poseKPStr, outJsonStr, true);
+
     std::vector<int> compressionParams;
     compressionParams.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compressionParams.push_back(9);
