@@ -70,7 +70,7 @@ int initOpenPoseServer()
     zmq::socket_t socket (context, ZMQ_REP);
     socket.bind ("tcp://*:5555");
 
-    op::log("OpenPose Library Tutorial - Example 1.", op::Priority::High);
+    op::log("OpenPose Server with ZeroMQ.", op::Priority::High);
     // ------------------------- INITIALIZATION -------------------------
     // Step 1 - Set logging level
         // - 0 will output all the logging messages
