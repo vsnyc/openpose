@@ -133,12 +133,18 @@ int initOpenPoseServer()
         std::string outJson = "/home/ubuntu/json/" + jsonStr;
         std::string outPng = "/home/ubuntu/rendered/" + renderedStr;
 
-        processImage(cvMatToOpInput, cvMatToOpOutput, poseExtractorCaffe, poseRenderer, opOutputToCvMat,
-                     inImage, outJson, outPng);
-
         //  Send reply back to client
         zmq::message_t reply (5);
-        memcpy (reply.data (), "Done.", 5);
+
+        try {
+            processImage(cvMatToOpInput, cvMatToOpOutput, poseExtractorCaffe, poseRenderer, opOutputToCvMat,
+                     inImage, outJson, outPng);
+            memcpy (reply.data (), "Done.", 5);
+        } catch (const std::exception& e) {
+          op::log("Could not process request");
+          memcpy (reply.data (), "Error", 5);
+        }
+
         socket.send (reply);
     }
 

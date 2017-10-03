@@ -146,7 +146,7 @@ ifneq ($(CPU_ONLY), 1)
 endif
 
 # LIBRARIES += glog gflags boost_system boost_filesystem m hdf5_hl hdf5 caffe
-LIBRARIES += glog gflags boost_system boost_filesystem m hdf5_hl hdf5
+LIBRARIES += glog gflags boost_system boost_filesystem m hdf5_hl hdf5 zmq
 
 # handle IO dependencies
 USE_LEVELDB ?= 1
