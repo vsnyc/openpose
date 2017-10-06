@@ -36,9 +36,11 @@ DEFINE_int32(logging_level, 3, "The logging level. Integer in the range [0, 255]
                                                         " 255 will not output any. Current OpenPose library messages are in the range 0-4: 1 for"
                                                         " low priority messages and 4 for important ones.");
 // Producer
-DEFINE_string(image_path,               "examples/media/COCO_val2014_000000000192.jpg",     "Process the desired image.");
-DEFINE_string(output_path_json,         "examples/media/COCO_val2014_000000000192.json",    "Store json output at this path.");
-DEFINE_string(output_path_png,          "examples/media/COCO_val2014_000000000192.png",     "Store rendered image at this path.");
+DEFINE_string(image_path,               "/home/ubuntu/images/",     "Input images dir");
+DEFINE_string(output_path_json,         "/home/ubuntu/json/",    "Store json output in this dir");
+DEFINE_string(output_path_png,          "/home/ubuntu/rendered/",     "Store rendered image in this dir");
+// ZeroMQ
+DEFINE_string(server_port,              "5555",              "ZeroMQ Port.");
 // OpenPose
 DEFINE_string(model_pose,               "COCO",         "Model to be used. E.g. `COCO` (18 keypoints), `MPI` (15 keypoints, ~10% faster), "
                                                         "`MPI_4_layers` (15 keypoints, even faster but less accurate).");
@@ -68,7 +70,8 @@ int initOpenPoseServer()
 {
     zmq::context_t context (1);
     zmq::socket_t socket (context, ZMQ_REP);
-    socket.bind ("tcp://*:5555");
+    std::string zeroMQPort = FLAGS_server_port;
+    socket.bind ("tcp://*:" + zeroMQPort);
 
     op::log("OpenPose Server with ZeroMQ.", op::Priority::High);
     // ------------------------- INITIALIZATION -------------------------
@@ -108,6 +111,10 @@ int initOpenPoseServer()
     poseExtractorCaffe.initializationOnThread();
     poseRenderer.initializationOnThread();
 
+    std::string imagePath = FLAGS_image_path;
+    std::string outputJsonPath = FLAGS_output_path_json;
+    std::string outputImagePath = FLAGS_output_path_png;
+
     // ------------------------- POSE ESTIMATION AND RENDERING -------------------------
     // Process requests in a loop
     while (true) {
@@ -129,9 +136,9 @@ int initOpenPoseServer()
         //std::cout << "JSON: " << recvData.substr(0, strLen - 4) + ".json" << " : Done" << std::endl;
         //std::cout << "PNG: " << recvData.substr(0, strLen - 4) + "_rendered.png" << " : Done" << std::endl;
 
-        std::string inImage = "/home/ubuntu/images/" + recvData;
-        std::string outJson = "/home/ubuntu/json/" + jsonStr;
-        std::string outPng = "/home/ubuntu/rendered/" + renderedStr;
+        std::string inImage = imagePath + recvData;
+        std::string outJson = outputJsonPath + jsonStr;
+        std::string outPng = outputImagePath + renderedStr;
 
         //  Send reply back to client
         zmq::message_t reply (5);
